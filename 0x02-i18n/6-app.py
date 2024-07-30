@@ -26,8 +26,10 @@ class Config:
     BABEL_DEFAULT_LOCALE = 'en'  # Default locale if none is specified
     BABEL_DEFAULT_TIMEZONE = 'UTC'  # Default timezone
 
+
 # Load configuration from the Config class
 app.config.from_object(Config)
+
 
 def get_user() -> str:
     '''Retrieve the user from the mock
@@ -37,10 +39,12 @@ def get_user() -> str:
         return users[int(user_id)]
     return None
 
+
 @app.before_request
 def before_request():
     '''Set the current user in the global context for each request'''
     g.user = get_user()
+
 
 @babel.localeselector
 def get_locale():
@@ -53,12 +57,15 @@ def get_locale():
     # Check user settings for locale
     if g.user and g.user.get('locale') in app.config['LANGUAGES']:
         return g.user.get('locale')
-    # Use the best match from the Accept-Language header if no URL parameter or user setting is found
+    # Use the best match from the Accept-Language header if no URL
+    # parameter or user setting is found
     return request.accept_languages.best_match(app.config['LANGUAGES'])
+
 
 @babel.timezoneselector
 def get_timezone() -> str:
-    '''Determine the timezone to use based on URL parameters or user settings'''
+    '''Determine the timezone to use based on URL
+    parameters or user settings'''
     # Check URL parameters for timezone
     tz = request.args.get('timezone')
     if tz:

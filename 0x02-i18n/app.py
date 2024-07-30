@@ -28,24 +28,30 @@ class Config:
     BABEL_DEFAULT_LOCALE = 'en'  # Default locale if none is specified
     BABEL_DEFAULT_TIMEZONE = 'UTC'  # Default timezone
 
+
 # Load configuration from the Config class
 app.config.from_object(Config)
 
+
 def get_user():
-    '''Retrieve the user from the mock user data based on the login_as parameter'''
+    '''Retrieve the user from the mock user data based on the login_as
+    parameter'''
     user_id = request.args.get('login_as')
     if user_id and user_id.isdigit() and int(user_id) in users:
         return users[int(user_id)]
     return None
+
 
 @app.before_request
 def before_request():
     '''Set the current user in the global context for each request'''
     g.user = get_user()
 
+
 @babel.localeselector
 def get_locale():
-    '''Determine the locale to use based on URL parameters or accept languages'''
+    '''Determine the locale to use based on URL
+    parameters or accept languages'''
     # Check URL parameters for locale
     lang = request.args.get('locale')
     if lang in app.config['LANGUAGES']:
@@ -53,12 +59,15 @@ def get_locale():
     # Check user settings for locale
     if g.user and g.user.get('locale') in app.config['LANGUAGES']:
         return g.user.get('locale')
-    # Use the best match from the Accept-Language header if no URL parameter or user setting is found
+    # Use the best match from the Accept-Language header if no URL
+    # parameter or user setting is found
     return request.accept_languages.best_match(app.config['LANGUAGES'])
+
 
 @babel.timezoneselector
 def get_timezone():
-    '''Determine the timezone to use based on URL parameters or user settings'''
+    '''Determine the timezone to use based on URL
+    parameters or user settings'''
     # Check URL parameters for timezone
     tz = request.args.get('timezone')
     if tz:
@@ -77,13 +86,14 @@ def get_timezone():
     # Default to UTC if no valid timezone is found
     return pytz.timezone('UTC')
 
+
 @app.route('/', strict_slashes=False)
 def home():
     '''Render the home page template'''
     # Get the current time in the inferred timezone
     tz = get_timezone()
     current_time = datetime.now(tz).strftime('%c')
-    return render_template('index.html', current_time=current_time)
+    return render_template('8-index.html', current_time=current_time)
 
 
 if __name__ == '__main__':
